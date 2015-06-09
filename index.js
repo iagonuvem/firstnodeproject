@@ -39,9 +39,9 @@ app.get('/', function (req, res) {
 app.post('/usuarios', function (req, res){
 	
 	//BUSCA OS DADOS PASSADOS COMO PARÂMETRO NA REQUISIÇÃO
-	var usuario = req.param('usuario', null);
-	var email = req.param('email', null);
-	var senha = req.param('senha', null);
+	var usuario = req.body.usuario;
+	var email = req.body.email;
+	var senha = req.body.senha;
 
 
 	var query = connection.query("INSERT INTO tbl_usuarios(usuario,email,senha) VALUES('"+usuario+"', '"+email+"', '"+senha+"')" , function(err, result, fields ){
@@ -57,6 +57,49 @@ app.post('/usuarios', function (req, res){
 
 });
 
+app.put('/usuarios', function (req, res){
+	
+	//BUSCA OS DADOS PASSADOS COMO PARÂMETRO NA REQUISIÇÃO
+	var usuario = req.body.usuario;
+	var email = req.body.email;
+	var senha = req.body.senha;
+	var id = req.body.id;
+
+	if(id){
+		var query = connection.query("UPDATE tbl_usuarios SET usuario='"+usuario+"' , email='"+email+"' , senha='"+senha+"' WHERE id="+id , function(err, result, fields ){
+			//Verifica se possui algum erro na execução da Query , caso exista , imprime-o na tela
+			if(err){
+				throw err;
+			}
+			else{
+				res.send(result);
+			}
+
+		});
+	}
+	else{
+		res.end('Precisa de um parâmetro de Entrada!');
+	}
+	
+
+});
+
+app.get('/usuarios/:id', function (req, res){
+
+	var id = req.params.id;
+	
+	var query = connection.query("SELECT * FROM tbl_usuarios WHERE id="+id , function(err, result, fields ){
+		//Verifica se possui algum erro na execução da Query , caso exista , imprime-o na tela
+		if(err){
+			throw err;
+		}
+		else{
+			res.send(result);
+		}
+
+	});
+
+});
 
 app.get('/usuarios', function (req, res){
 	
@@ -73,9 +116,10 @@ app.get('/usuarios', function (req, res){
 
 });
 
+
 app.delete('/usuarios/:id', function (req, res){
 	
-	var id = req.params('id'); //Busca o parâmetro passado
+	var id = req.params.id; //Busca o parâmetro passado
 
 	var query = connection.query("DELETE FROM tbl_usuarios WHERE id="+id , function(err, result, fields ){
 		//Verifica se possui algum erro na execução da Query , caso exista , imprime-o na tela
